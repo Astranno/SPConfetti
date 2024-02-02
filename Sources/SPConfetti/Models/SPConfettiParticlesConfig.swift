@@ -35,7 +35,7 @@ public struct SPConfettiParticlesConfig {
     /**
      SPConfetti: Style of particles. Can be custom image.
      */
-    public var colors: [UIColor] = [UIColor(red: 0.15, green: 0.75, blue: 0.96, alpha: 1.00)]
+    public var colors: [UIColor] = [UIColor(red: 0.15, green: 0.75, blue: 0.96, alpha: 0.50)]
     
     /**
      SPConfetti: The number of emitted objects created every second.
