@@ -19,6 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if canImport(UIKit)
 import UIKit
 
 extension UIImage {
@@ -66,3 +67,54 @@ extension UIImage {
         }
     }
 }
+#elseif canImport(AppKit)
+import AppKit
+
+extension NSImage {
+    
+    /**
+     SPConfetti: Apply color for image.
+     */
+    func colored(_ color: NSColor) -> NSImage {
+//        let renderer = UIGraphicsImageRenderer(size: size)
+//        return renderer.image { context in
+//            color.setFill()
+//            self.draw(in: .zero)
+//            context.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height), blendMode: .sourceAtop)
+//        }
+        self
+    }
+    
+    /**
+     SPConfetti: Resize image to new size with save proportional.
+     */
+    func resize(newWidth desiredWidth: CGFloat) -> NSImage {
+        let oldWidth = size.width
+        let scaleFactor = desiredWidth / oldWidth
+        let newHeight = size.height * scaleFactor
+        let newWidth = oldWidth * scaleFactor
+        let newSize = CGSize(width: newWidth, height: newHeight)
+        return resize(targetSize: newSize)
+    }
+
+    /**
+     SPConfetti: Resize image to new size with save proportional.
+     */
+    func resize(newHeight desiredHeight: CGFloat) -> NSImage {
+        let scaleFactor = desiredHeight / size.height
+        let newWidth = size.width * scaleFactor
+        let newSize = CGSize(width: newWidth, height: desiredHeight)
+        return resize(targetSize: newSize)
+    }
+    
+    /**
+     SPConfetti: Resize image to new size without saving proportional.
+     */
+    func resize(targetSize: CGSize) -> NSImage {
+//        return NSGraphicsImageRenderer(size:targetSize).image { _ in
+//            self.draw(in: CGRect(origin: .zero, size: targetSize))
+//        }
+        self
+    }
+}
+#endif

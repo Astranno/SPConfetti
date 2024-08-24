@@ -19,7 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 /**
  SPConfetti: Particles styles.
@@ -32,7 +36,11 @@ public enum SPConfettiParticle {
     case circle
     case triangle
     case polygon
+    #if canImport(UIKit)
     case custom(UIImage)
+    #elseif canImport(AppKit)
+    case custom(NSImage)
+    #endif
     
     public var id: String {
         switch self {
@@ -58,7 +66,13 @@ public enum SPConfettiParticle {
         }
     }
     
+    #if canImport(UIKit)
     public var image: UIImage {
         return Images.particles_icon(for: self)
     }
+    #elseif canImport(AppKit)
+    public var image: NSImage {
+        return Images.particles_icon(for: self)
+    }
+    #endif
 }

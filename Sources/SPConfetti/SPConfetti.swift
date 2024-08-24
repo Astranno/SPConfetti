@@ -19,12 +19,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 /**
  SPConfetti: Acess level. Here you get ready-use methods.
  Recomended use it.
  */
+#if canImport(UIKit)
 public class SPConfetti {
     
     /**
@@ -89,3 +94,70 @@ public class SPConfetti {
     private static let shared = SPConfetti()
     private init() {}
 }
+#elseif canImport(AppKit)
+public class SPConfetti {
+    
+    /**
+     SPConfetti: Flag for detect if confetti making now.
+     */
+    public static var isReleasesParticles: Bool {
+        return shared.view.isReleasesParticles
+    }
+    
+    /**
+     SPConfetti: Start animating with selected animation and particles style.
+     
+     - parameter animation: Kind of animation, position and direction of particles.
+     - parameter particles: Particles style. Can be custom image.
+     - parameter window: The targe window. Use key window if `nil`.
+     */
+    @available(iOSApplicationExtension,  unavailable)
+    public static func startAnimating(_ animation: SPConfettiAnimation, particles: [SPConfettiParticle], in window: NSWindow? = nil) {
+        shared.view.animation = animation
+        shared.view.particles = particles
+        let keyWindow = NSApplication.shared.windows.first { $0.isKeyWindow }
+        guard let window = window ?? keyWindow else { return }
+        if let superview = shared.view.superview, superview == window {
+//            superview.bringSubviewToFront(shared.view)
+        } else {
+            shared.view.addSubview(shared.view)
+        }
+        shared.view.frame = window.frame
+        shared.view.autoresizingMask = [.width, .height]
+        shared.view.startAnimating()
+    }
+    
+    /**
+     SPConfetti: Start animating with selected animation and particles style.
+     
+     - parameter animation: Kind of animation, position and direction of particles.
+     - parameter particles: Particles style. Can be custom image.
+     - parameter duration: Automatically stop animation after this time interval.
+     - parameter window: The targe window. Use key window if `nil`.
+     */
+    @available(iOSApplicationExtension, unavailable)
+    public static func startAnimating(_ animation: SPConfettiAnimation, particles: [SPConfettiParticle], duration: TimeInterval, in window: NSWindow? = nil) {
+        startAnimating(animation, particles: particles, in: window)
+        delay(duration, closure: {
+            stopAnimating()
+        })
+    }
+    
+    /**
+     SPConfetti: Stop current animation.
+     */
+    public static func stopAnimating() {
+        shared.view.stopAnimating()
+    }
+    
+    // MARK: - Internal
+    
+    let view = SPConfettiView()
+    
+    // MARK: - Singltone
+    
+    private static let shared = SPConfetti()
+    private init() {}
+}
+
+#endif

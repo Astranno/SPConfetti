@@ -25,6 +25,7 @@
 import SwiftUI
 
 /// An empty placeholder view that used to retrieve current window and trigger confetti.
+#if canImport(UIKit)
 @available(iOS 13.0, tvOS 13.0, *)
 struct ConfettiPlaceholderView: UIViewRepresentable {
     
@@ -104,13 +105,95 @@ struct ConfettiPlaceholderView: UIViewRepresentable {
     }
     
 }
+#elseif canImport(AppKit)
+@available(macOS 14.0, *)
+struct ConfettiPlaceholderView: NSViewRepresentable {
+    
+    typealias NSViewType = UnderlyingView
+    
+    
+    @Binding var isPresented: Bool
+    
+    var animation: SPConfettiAnimation
+    var particles: [SPConfettiParticle]
+    var duration: TimeInterval?
+    
+    func makeNSView(context: Context) -> UnderlyingView {
+        UnderlyingView(isPresented: $isPresented)
+    }
+    
+    func updateNSView(_ view: UnderlyingView, context: Context) {
+        view.animation = animation
+        view.particles = particles
+        view.duration = duration
+        view.particleConfig = context.environment.confettiParticlesConfiguration
+        
+        if isPresented && !view.isReleasesParticles {
+            view.play()
+            
+        } else if !isPresented && view.isReleasesParticles {
+            view.stop()
+        }
+    }
+    
+    class UnderlyingView: NSView {
+        
+        var isPresented: Binding<Bool>
+        
+        var animation: SPConfettiAnimation = .centerWidthToDown
+        var particles: [SPConfettiParticle] = []
+        var duration: TimeInterval? = nil
+        var particleConfig: SPConfettiParticlesConfig = .defaultValue
+        
+        private(set) var isReleasesParticles: Bool
+        
+        init(isPresented: Binding<Bool>) {
+            self.isPresented = isPresented
+            isReleasesParticles = false
+            super.init(frame: .zero)
+        }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
+        func play() {
+            isReleasesParticles = true
+            
+            SPConfettiConfiguration.particlesConfig = particleConfig
+            
+            if let duration = duration {
+                SPConfetti.startAnimating(animation,
+                                          particles: particles,
+                                          duration: duration,
+                                          in: self.window)
+                
+                delay(duration) { [weak self] in
+                    self?.stop()
+                }
+            } else {
+                SPConfetti.startAnimating(animation,
+                                          particles: particles,
+                                          in: self.window)
+            }
+        }
+        
+        func stop() {
+            isReleasesParticles = false
+            SPConfetti.stopAnimating()
+            isPresented.wrappedValue = false
+        }
+    }
+    
+}
+#endif
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, macOS 14.0, *)
 extension SPConfettiParticlesConfig: EnvironmentKey {
     public static let defaultValue: Self = .init()
 }
 
-@available(iOS 13.0, tvOS 13.0, *)
+@available(iOS 13.0, macOS 14.0, tvOS 13.0, *)
 extension EnvironmentValues {
     public var confettiParticlesConfiguration: SPConfettiParticlesConfig {
         get { self[SPConfettiParticlesConfig.self] }
@@ -118,7 +201,7 @@ extension EnvironmentValues {
     }
 }
 
-@available(iOS 13.0, tvOS 13.0, *)
+@available(iOS 13.0, macOS 14.0, tvOS 13.0, *)
 extension View {
     
     /**

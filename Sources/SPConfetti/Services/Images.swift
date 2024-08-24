@@ -19,10 +19,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 enum Images {
     
+    #if canImport(UIKit)
     static func particles_icon(for particles: SPConfettiParticle) -> UIImage {
         switch particles {
         case .arc:
@@ -41,6 +46,26 @@ enum Images {
             return image
         }
     }
+    #elseif canImport(AppKit)
+    static func particles_icon(for particles: SPConfettiParticle) -> NSImage {
+        switch particles {
+        case .arc:
+            return NSImage.init(named: "arc") ?? NSImage()
+        case .heart:
+            return NSImage.init(named: "heart") ?? NSImage()
+        case .circle:
+            return NSImage.init(named: "circle") ?? NSImage()
+        case .polygon:
+            return NSImage.init(named: "polygon") ?? NSImage()
+        case .star:
+            return NSImage.init(named: "star") ?? NSImage()
+        case .triangle:
+            return NSImage.init(named: "triangle") ?? NSImage()
+        case .custom(let image):
+            return image
+        }
+    }
+    #endif
     
     // MARK: - Internal
     

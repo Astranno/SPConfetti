@@ -19,7 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 /**
  SPConfetti: Wrapper of particles settings.
@@ -35,7 +39,11 @@ public struct SPConfettiParticlesConfig {
     /**
      SPConfetti: Style of particles. Can be custom image.
      */
+    #if canImport(UIKit)
     public var colors: [UIColor] = [UIColor(red: 0.61, green: 0.93, blue: 1.00, alpha: 0.75)]
+    #elseif canImport(AppKit)
+    public var colors: [NSColor] = [NSColor(red: 0.61, green: 0.93, blue: 1.00, alpha: 0.75)]
+    #endif
     
     /**
      SPConfetti: The number of emitted objects created every second.
